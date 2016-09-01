@@ -1,0 +1,15 @@
+# project files
+*.sublime-*
+
+# security files
+.accounts
+accounts
+users
+
+# notes and logs
+logfile.log
+notes/*
+
+# executables
+noted
+salthash/salthash

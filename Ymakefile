@@ -1,0 +1,35 @@
+## Single use of a salt value.
+## At every compile, a different random number is generated (CRC from /dev/urandom)
+## This number is then used for converting accounts 
+
+variables:
+  salt: cat /dev/urandom | head -n 1 | cksum | cut -f1 -d " "
+  gopath: echo $GOPATH
+
+blocks:
+  default:
+    post:
+      - testacc
+      - security
+      - server
+
+  server:
+    cmd: 
+      - go build -ldflags '-X main.SALT={salt}' github.com/nananas/noted
+    post: 
+      - run
+
+  run:
+    cmd: './noted'
+
+  security:
+    cmd:
+      - cd salthash && go build -ldflags '-X main.SALT={salt}' salthash.go
+      - ./salthash/salthash
+
+  ## This creates a ./.accounts file before every compilation
+  ## the security block will remove this file again after hashing the passwords
+  ## In a normal situation, this file has to be manually created by the user
+  testacc:
+    cmd:
+      echo -n "test|testing" > ./.accounts
