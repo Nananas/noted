@@ -1,8 +1,8 @@
 # Noted
 
-> Minimal self-hosting notebook in Go.
+> Minimal self-hosting notebook web-app in Go.
 
-Noted is a minimal notebook webapp that can be self-hosted. 
+Noted is a minimal notebook web-app that can be self-hosted. 
 It has no database, all notes are saved as files.
-A SHA256 salted hash is used for password protection, just in case.
+Sessions areA SHA256 salted hash is used for password protection, just in case.
 
