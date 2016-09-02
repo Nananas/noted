@@ -29,6 +29,7 @@ type Notebook struct {
 }
 
 var SALT string
+var VERSION string
 
 func main() {
 	log.SetFlags(log.Lshortfile)
@@ -39,11 +40,20 @@ func main() {
 	}
 	defer f.Close()
 
-	if len(os.Args) > 1 && os.Args[1] == "-d" {
-		fmt.Println("Starting in debug mode")
-		log.SetFlags(log.Lshortfile)
-	} else {
-		log.SetOutput(f)
+	log.SetOutput(f)
+
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case "-d", "--debug":
+			fmt.Println("Starting in debug mode")
+			log.SetFlags(log.Lshortfile)
+		case "-V", "--version":
+			fmt.Println("Noted version " + VERSION)
+			return
+		case "-h", "--help":
+			printHelp()
+			return
+		}
 	}
 
 	security.LoadConfig()
@@ -229,4 +239,17 @@ func isAny(b rune, any ...rune) bool {
 	}
 
 	return false
+}
+
+func printHelp() {
+	help := `
+Usage:
+	./noted [options]
+
+Options:
+	-h --help 		print this help message
+	-V --version	print version info
+	-d --debug		print debug info to stdout instead of logfile.log
+`
+	fmt.Print(help)
 }

@@ -13,10 +13,9 @@ var cache map[string]string
 func Validate(user string, pass string) bool {
 	if cache[user] != "" {
 		return cache[user] == SaltHash(pass)
-	} else {
-		cache = parseAccountsFile()
-		return cache[user] == SaltHash(pass)
 	}
+
+	return false
 }
 
 func GetSessionValue(user string) string {

@@ -70,11 +70,28 @@ func main() {
 
 	fmt.Println("Users written in ./users file.")
 
-	err = os.Remove("./.accounts")
+	var response string
+	_, err = fmt.Scanln(&response)
 	if err != nil {
-		log.Println(err)
+		log.Fatal(err)
 	}
 
-	fmt.Println("Removed .accounts file. Everything went well.")
+	fmt.Println("Everything went well. Should I now remove the .accounts file?\nThis will be better for security, but you will have to recreate this file\neach time you want to recreate the accounts...")
+	fmt.Print("[y,yes]: ")
+
+	if response == "y" || response == "yes" {
+
+		err = os.Remove("./.accounts")
+		if err != nil {
+			log.Println(err)
+		}
+
+		fmt.Println("Removed .accounts file. Everything went well.")
+
+		return
+
+	}
+
+	fmt.Println("The .accounts file was NOT removed.")
 
 }

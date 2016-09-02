@@ -10,6 +10,8 @@ users
 logfile.log
 notes/*
 
-# executables
+# executables and archives
 noted
 salthash/salthash
+package/
+*.tar.gz

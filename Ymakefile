@@ -5,6 +5,7 @@
 variables:
   salt: cat /dev/urandom | head -n 1 | cksum | cut -f1 -d " "
   gopath: echo $GOPATH
+  version: echo v0.2
 
 blocks:
   default:
@@ -15,7 +16,7 @@ blocks:
 
   server:
     cmd: 
-      - go build -ldflags '-X main.SALT={salt}' github.com/nananas/noted
+      - go build -ldflags '-X main.SALT={salt} -X main.VERSION={version}' github.com/nananas/noted
     post: 
       - run
 
@@ -26,6 +27,7 @@ blocks:
     cmd:
       - cd salthash && go build -ldflags '-X main.SALT={salt}' salthash.go
       - ./salthash/salthash
+    stdin: y
 
   ## This creates a ./.accounts file before every compilation
   ## the security block will remove this file again after hashing the passwords
@@ -33,3 +35,11 @@ blocks:
   testacc:
     cmd:
       echo -n "test|testing" > ./.accounts
+
+  package:
+    cmd:
+      - mkdir -p ./package
+      - cp noted salthash/salthash ./package
+      - cp -r html ./package
+      - cp LICENSE README.md ./package
+      - cd package && tar -cvf ../noted_{version}.tar.gz *
