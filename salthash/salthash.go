@@ -70,14 +70,14 @@ func main() {
 
 	fmt.Println("Users written in ./users file.")
 
+	fmt.Println("Everything went well. Should I now remove the .accounts file?\nThis will be better for security, but you will have to recreate this file\neach time you want to recreate the accounts...")
+	fmt.Print("[y,yes]: ")
+
 	var response string
 	_, err = fmt.Scanln(&response)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Println("Everything went well. Should I now remove the .accounts file?\nThis will be better for security, but you will have to recreate this file\neach time you want to recreate the accounts...")
-	fmt.Print("[y,yes]: ")
 
 	if response == "y" || response == "yes" {
 

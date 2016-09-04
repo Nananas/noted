@@ -27,7 +27,7 @@ blocks:
     cmd:
       - cd salthash && go build -ldflags '-X main.SALT={salt}' salthash.go
       - ./salthash/salthash
-    stdin: y
+    # stdin: y
 
   ## This creates a ./.accounts file before every compilation
   ## the security block will remove this file again after hashing the passwords
