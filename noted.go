@@ -148,15 +148,15 @@ func handlerEditNote(rw http.ResponseWriter, req *http.Request) {
 
 	notebook := Notebook{}
 
-	if len(req.URL.EscapedPath()[3:]) != 0 {
+	if len(req.URL.Path[3:]) != 0 {
 
 		// check if file exists
-		b, err := ioutil.ReadFile("./notes/" + req.URL.EscapedPath()[3:])
+		b, err := ioutil.ReadFile("./notes/" + req.URL.Path[3:])
 		if err != nil {
 			log.Println(err)
 		} else {
 			notebook.Text = string(b)
-			notebook.Name = req.URL.EscapedPath()[3:]
+			notebook.Name = req.URL.Path[3:]
 		}
 	}
 
