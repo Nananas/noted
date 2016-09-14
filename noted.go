@@ -59,19 +59,41 @@ func main() {
 	security.LoadConfig()
 	security.SetSalt(SALT)
 
-	http.HandleFunc("/", handler)
 	http.HandleFunc("/favicon.ico", handlerStatic)
 
+	// No session required
+	//
 	http.HandleFunc("/login", handlerLogin)
-	http.HandleFunc("/notes", handlerNotes)
-	http.HandleFunc("/N/", handlerEditNote)
-
 	http.HandleFunc("/POST_login", handlerPostLogin)
-	http.HandleFunc("/POST_save", handlerPostSave)
+
+	// Session required
+	//
+	http.HandleFunc("/", MSession(handler))
+	http.HandleFunc("/notes", MSession(handlerNotes))
+	http.HandleFunc("/N/", MSession(handlerEditNote))
+	http.HandleFunc("/POST_save", MSession(handlerPostSave))
 
 	err = http.ListenAndServe(":4444", nil)
 	if err != nil {
 		log.Fatal(err)
+	}
+}
+
+// Middleware: continue if valid session
+// 				else redirect to login
+//
+func MSession(f func(rw http.ResponseWriter, req *http.Request)) http.HandlerFunc {
+	return func(rw http.ResponseWriter, req *http.Request) {
+		if !security.ValidSession(req) {
+			http.Redirect(rw, req, "/login", http.StatusSeeOther)
+			return
+		}
+
+		// update session if valid
+		//
+		security.UpdateSession(rw, req)
+
+		f(rw, req)
 	}
 }
 
@@ -80,13 +102,6 @@ func handlerStatic(rw http.ResponseWriter, req *http.Request) {
 }
 
 func handler(rw http.ResponseWriter, req *http.Request) {
-	// if not logged in: redirect to login page
-	if !security.ValidSession(req) {
-		http.Redirect(rw, req, "/login", http.StatusSeeOther)
-		return
-	}
-
-	//
 	http.Redirect(rw, req, "/N/", http.StatusSeeOther)
 }
 
@@ -96,11 +111,6 @@ func handlerLogin(rw http.ResponseWriter, req *http.Request) {
 }
 
 func handlerNotes(rw http.ResponseWriter, req *http.Request) {
-
-	if !security.ValidSession(req) {
-		http.Redirect(rw, req, "/login", http.StatusSeeOther)
-		return
-	}
 
 	infos, err := ioutil.ReadDir("./notes")
 	if err != nil {
@@ -140,11 +150,6 @@ func handlerNotes(rw http.ResponseWriter, req *http.Request) {
 }
 
 func handlerEditNote(rw http.ResponseWriter, req *http.Request) {
-
-	if !security.ValidSession(req) {
-		http.Redirect(rw, req, "/login", http.StatusSeeOther)
-		return
-	}
 
 	notebook := Notebook{}
 
@@ -200,11 +205,6 @@ func handlerPostLogin(rw http.ResponseWriter, req *http.Request) {
 }
 
 func handlerPostSave(rw http.ResponseWriter, req *http.Request) {
-	// check cookie
-	if !security.ValidSession(req) {
-		http.Redirect(rw, req, "/login", http.StatusSeeOther)
-		return
-	}
 
 	if req.Method != "POST" {
 		http.Error(rw, "Invalid method.", http.StatusMethodNotAllowed)
