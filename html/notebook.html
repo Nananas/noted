@@ -15,7 +15,7 @@
 			left:0;
 			right:0;
 		    width: 90%;
-			height: 100%;
+			height: 85%;
 
 		    padding: 5%;
 
@@ -23,11 +23,16 @@
 			font-family: monospace;
 			outline: none;
 			resize:none;
-
-			background-color: inherit;
-
+			
 			font-size: 14px;
-			/*font-weight: bold;*/
+			background-color: inherit;
+		}
+
+		@media screen and (max-width: 480px) {
+			textarea {
+				font-size: 10px;
+				/*font-weight: bold;*/
+			}
 		}
 
 		.round-button {
@@ -84,6 +89,27 @@
 			font-size: 14px;
 
 			line-height: 50px;
+		}
+
+		div.popupchecktodo {
+			margin-right: -80px;
+			margin-left: 15px;
+
+			float: left;
+		}
+
+		input.popupchecktodo {
+			width: 60px;
+			height: 60px;
+
+			outline: none;
+			/*border: 4px solid #cccccc;*/
+			border-radius: 0;
+			color: #ffffff;
+			background-color: #888888;
+			text-align: center;
+			font-family: monospace;
+			font-size: 24px;
 		}
 
 		div.popupok {
@@ -145,6 +171,9 @@
 	<div id="popupcontainer">
 		<div class="popupname">
 			<input id="popupname" name="name" type="text" placeholder="Note name..." value="{{.Name}}">
+		</div>
+		<div class="popuptodocheck">
+			<input class="popuptodocheck" type="checkbox">
 		</div>
 		<div class="popupok">
 			<input class="popupok" type="submit" value="✓">

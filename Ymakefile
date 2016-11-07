@@ -21,7 +21,10 @@ blocks:
       - run
 
   run:
-    cmd: './noted'
+    cmd: 
+      - '# Running at localhost:4444'
+      - './noted'
+      
 
   security:
     cmd:
