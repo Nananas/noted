@@ -5,8 +5,8 @@
 variables:
   salt: cat /dev/urandom | head -n 1 | cksum | cut -f1 -d " "
   gopath: echo $GOPATH
-  version: echo v0.2.1
-
+  version: echo v0.2.2
+  
 blocks:
   default:
     post:
