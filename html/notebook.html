@@ -167,6 +167,7 @@
 <script type="text/javascript">
 	var popupcontainer = document.getElementById("popupcontainer")
 	var popupname = document.getElementById("popupname")
+	var cursorpos = -1;
 	function showpopup() {
 		popupcontainer.style.display = "block"
 		popupname.focus()
@@ -185,6 +186,36 @@
 			textarea.selectionStart = start + 1
 			textarea.selectionEnd = start + 1
 	}
+	
+	function lines(){
+		var l = [];
+		var tmp = textarea.value;
+		var s = 0;
+		var j = 0;
+		var r = tmp.indexOf("\n");
+		var c = -1;
+		var tc = textarea.selectionStart;
+		var cx = -1;
+		while(r != -1) {
+			l[j] = textarea.value.substring(s, r);
+			if (tc >= s && tc <= r) {
+				c = j;
+				cx = tc - s;
+			}
+
+			s = r + 1;
+			j++;
+			r = tmp.indexOf("\n", s);
+		}
+	
+		if (c == -1) {
+			c = j;
+			cx = tc - s;
+		}
+
+		l[j] = textarea.value.substring(s);
+		return {lines: l, cursorline: c, cursorpos: cx};
+	}
 
 	function newline_endofline() {
 		var start = textarea.selectionStart;
@@ -200,10 +231,30 @@
 	}
 
 	function move_cursor(dx, dy) {
-		// TODO: move vertical
 		var start = textarea.selectionStart;
-		textarea.selectionStart = start+dx;
-		textarea.selectionEnd = start+dx;
+		var r = lines();
+		if (cursorpos == -1) cursorpos = r.cursorpos;
+		var newpos = 0;
+		for (i = 0; i < r.cursorline + dy; i++) {
+			newpos += r.lines[i].length + 1;
+		}
+		
+		if (dy != 0) {
+			//var cp = 0;
+			if (r.lines[i].length < cursorpos) {
+				//cp = r.lines[i].length;
+			} else {
+				//cp = cursorpos; 
+				//cursorpos = r.cursorpos + dx;
+			}
+			newpos += Math.min(cursorpos, r.lines[i].length); 
+		} else {
+			newpos += r.cursorpos + dx;
+			cursorpos = r.cursorpos + dx;
+		}
+		textarea.selectionStart = newpos;
+		textarea.selectionEnd = newpos;
+		
 	}
 
 	var textarea = document.getElementById("textarea")
