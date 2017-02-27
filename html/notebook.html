@@ -217,17 +217,15 @@
 		return {lines: l, cursorline: c, cursorpos: cx};
 	}
 
-	function newline_endofline() {
+	function insert_before(c){
 		var start = textarea.selectionStart;
 		var end = textarea.selectionEnd;
-		var tmp = textarea.value;
-		var endlinechar_pos = tmp.indexOf("\n", start);
+		textarea.value = textarea.value.substring(0, start) + c + textarea.value.substring(end);
+		textarea.selectionStart = start + 1;
+		textarea.selectionEnd = start + 1;
 
-		if (endlinechar_pos == -1) endlinechar_pos = textarea.value.length;
-
-		textarea.value = textarea.value.substring(0, endlinechar_pos) + "\n" + textarea.value.substring(endlinechar_pos);
-		textarea.selectionStart = endlinechar_pos+1;
-		textarea.selectionEnd = endlinechar_pos+1;
+		// update cursor
+		cursorpos = lines().cursorpos;
 	}
 
 	function move_cursor(dx, dy) {
@@ -240,13 +238,6 @@
 		}
 		
 		if (dy != 0) {
-			//var cp = 0;
-			if (r.lines[i].length < cursorpos) {
-				//cp = r.lines[i].length;
-			} else {
-				//cp = cursorpos; 
-				//cursorpos = r.cursorpos + dx;
-			}
 			newpos += Math.min(cursorpos, r.lines[i].length); 
 		} else {
 			newpos += r.cursorpos + dx;
@@ -254,7 +245,34 @@
 		}
 		textarea.selectionStart = newpos;
 		textarea.selectionEnd = newpos;
+	}
+
+	function goto_(c) {
+		var start = textarea.selectionStart;
+		var end = textarea.selectionEnd;
+		var tmp = textarea.value;
+		var char_pos = tmp.indexOf(c, start);
+
+		if (char_pos == -1) char_pos = textarea.value.length;
 		
+		textarea.selectionStart = char_pos;
+		textarea.selectionEnd = char_pos;
+
+		cursorpos = lines().cursorpos;
+	}
+	
+	function goback_(c) {
+		var start = textarea.selectionStart;
+		var end = textarea.selectionEnd;
+		var tmp = textarea.value;
+		var char_pos = tmp.lastIndexOf(c, start -1);
+
+		if (char_pos == -1) char_pos = 0;
+		
+		textarea.selectionStart = char_pos + 1;
+		textarea.selectionEnd = char_pos + 1;
+
+		cursorpos = lines().cursorpos;
 	}
 
 	var textarea = document.getElementById("textarea")
@@ -264,13 +282,24 @@
 			indent()
 		} else if (event.keyCode == 13 && event.ctrlKey) {
 			event.preventDefault();
-			newline_endofline();
+			goto_("\n");
+			insert_before("\n");
 		} else if (event.keyCode == 76 && event.ctrlKey) {
-			event.preventDefault();
-			move_cursor(1, 0);
+			if (event.shiftKey) {
+				event.preventDefault();
+				goto_("\n");
+			} else {
+				event.preventDefault();
+				move_cursor(1, 0);
+			}
 		} else if (event.keyCode == 72 && event.ctrlKey) {
-			event.preventDefault();
-			move_cursor(-1, 0);
+			if (event.shiftKey) {
+				event.preventDefault();
+				goback_("\n");
+			} else {
+				event.preventDefault();
+				move_cursor(-1, 0);
+			}
 		} else if (event.keyCode == 74 && event.ctrlKey) {
 			event.preventDefault();
 			move_cursor(0, 1);
@@ -278,6 +307,8 @@
 			event.preventDefault();
 			move_cursor(0, -1);
 		}
+
+
 	}
 </script>
 </html>
