@@ -210,11 +210,26 @@
 			textarea.selectionEnd = start + 1
 	}
 
+	function newline_endofline() {
+		var start = textarea.selectionStart;
+		var end = textarea.selectionEnd;
+		var tmp = textarea.value;
+		var endlinechar_pos = tmp.indexOf("\n", start);
+
+		if (endlinechar_pos == -1) endlinechar_pos = textarea.value.length;
+
+		textarea.value = textarea.value.substring(0, endlinechar_pos) + "\n" + textarea.value.substring(endlinechar_pos);
+		textarea.selectionStart = endlinechar_pos+1;
+		textarea.selectionEnd = endlinechar_pos+1;
+	}
 	var textarea = document.getElementById("textarea")
 	textarea.onkeydown = function(event) {
 		if (event.keyCode == 9) {
 			event.preventDefault()
 			indent()
+		} else if (event.keyCode == 13 && event.ctrlKey) {
+			event.preventDefault()
+			newline_endofline();
 		}
 	}
 </script>
